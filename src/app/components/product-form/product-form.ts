@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductsService } from '../../service/products.sevice';
 import { IProduct } from '../../interfaces/iproduct.interface';
 import Swal from 'sweetalert2';
@@ -18,10 +18,16 @@ export class ProductForm {
   constructor() {
     // Inicializamos el FormGroup con los controles necesarios
     this.productForm = new FormGroup({
-      title: new FormControl(''),
-      price: new FormControl(''),
-      quantity: new FormControl('')
+      title: new FormControl('',[Validators.required, Validators.minLength(3)]),
+      price: new FormControl('',[Validators.required, Validators.min(0.01)]),
+      quantity: new FormControl('',[Validators.required, Validators.min(1)])
     });
+  }
+
+  checkError(controlName: string, errorName: string): boolean | undefined {
+        //Existe un formulario que tiene un campo controlName -->
+        //y dicho formulario tiene un error-->
+    return this.productForm.get(controlName)?.hasError(errorName) && this.productForm.get(controlName)?.touched;
   }
 
 
@@ -44,4 +50,7 @@ export class ProductForm {
       this.productForm.reset(); // Limpiar el formulario después de agregar el producto
     }
   }
+
+
+
 }

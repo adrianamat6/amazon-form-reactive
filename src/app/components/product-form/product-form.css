@@ -62,3 +62,8 @@
 .btn-submit:active {
     transform: scale(0.98);
 }
+
+/* Solo se pone rojo si es inválido Y el usuario ha pasado por él (touched) */
+input.ng-invalid.ng-touched  {
+    border-color: #e74c3c;
+}

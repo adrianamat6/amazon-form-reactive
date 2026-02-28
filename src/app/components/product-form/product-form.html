@@ -4,23 +4,50 @@
     <!-- 2. Vinculación clave: [formGroup] y (ngSubmit) sin pasar variables -->
     <form [formGroup]="productForm" (ngSubmit)="addProduct()">
 
+
         <div class="form-group">
             <label for="title">Título</label>
-            <!-- Directiva ngModel (sin corchetes) y atributo name obligatorios -->
             <input type="text" id="title" formControlName="title" placeholder="Ej. Zapatillas Running" >
-        </div>
+
+            <!-- Existe un formulario que tiene un campo name que se llama title-->
+            <!-- y Dicho formulario tiene un error-->
+            @if(checkError('title', 'required')){
+                <p class="error">Campo requerido</p>
+            }
+            @if(checkError('title', 'minlength')){
+                <p class="error"> Longitud minima de 3 caracteres</p>
+            }
+
+        </div>1
 
         <div class="form-group">
             <label for="price">Precio</label>
             <input type="number" id="price" formControlName="price" placeholder="0.00" >
+
+            @if(checkError('price', 'required')){
+                <p class="error">Campo requerido</p>
+            }
+            @if(checkError('price', 'min')){
+            <p class="error"> Cantidad mínima de 0.01</p>
+            }
+
+
         </div>
 
         <div class="form-group">
             <label for="quantity">Cantidad</label>
             <input type="number" id="quantity" formControlName="quantity" placeholder="0" >
+            @if(checkError('quantity', 'required')){
+                <p class="error">Campo requerido</p>
+            }
+
+            @if(checkError('quantity', 'min')){
+                <p class="error"> Cantidad mínima de 1</p>
+            }
         </div>
 
-        <button type="submit" class="btn-submit">Añadir producto</button>
+        <!-- Botón de envío Importante poner la propiedad [disabled] para evitar que se envie si el formulario no es válido -->
+        <button type="submit" class="btn-submit" [disabled]="productForm.invalid">Añadir producto</button>
 
     </form>
 </div>
