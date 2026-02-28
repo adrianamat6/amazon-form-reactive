@@ -1,61 +1,47 @@
 import { Component, inject } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ProductsService } from '../../service/products.sevice';
 import { IProduct } from '../../interfaces/iproduct.interface';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-form',
-  imports: [FormsModule], // ✔️ El FormsModule ya lo tenías importado correctamente
+  imports: [ReactiveFormsModule], // ✔️ El FormsModule ya lo tenías importado correctamente
   templateUrl: './product-form.html',
   styleUrl: './product-form.css',
 })
 export class ProductForm {
   productService = inject(ProductsService);
 
-  // NOTA: Eliminamos la variable 'newProduct' global porque 
-  // ahora los datos nos los da directamente el formulario.
+  productForm: FormGroup; // Declaramos el FormGroup para el formulario reactivo
 
-  // 3. Método para agregar un nuevo producto recibiendo el NgForm
-  addProduct(productForm: NgForm) {
-    // Extraemos los valores del formulario
-    const valores = productForm.value;
+  constructor() {
+    // Inicializamos el FormGroup con los controles necesarios
+    this.productForm = new FormGroup({
+      title: new FormControl(''),
+      price: new FormControl(''),
+      quantity: new FormControl('')
+    });
+  }
 
-    // Comprobamos que existan los datos y no sean 0 (además del .valid que comprueba los "required" del HTML)
-    if (productForm.valid && valores.title !== "" && valores.price > 0 && valores.quantity > 0) {
-      
-      // Creamos el objeto basado en la interfaz IProduct
-      const newProduct: IProduct = {
-        title: valores.title,
-        price: valores.price,
-        quantity: valores.quantity
-      };
 
-      // Guardamos el producto
-      const response = this.productService.insertProduct(newProduct);
-      
-      // Limpiamos los inputs del formulario automáticamente
-      productForm.reset();
+  addProduct() {
+    // Esto ahora debería mostrar los datos del formulario en la consola
 
-      console.log('Producto agregado:', response);
-      console.log('Lista actualizada de productos:', this.productService.getAllProducts());
-   
+    const newProduct: IProduct = this.productForm.value; // Obtenemos los valores del formulario y los asignamos a newProduct
+    this.productService.insertProduct(newProduct);
+
+
+    if (this.productForm.valid) {
       Swal.fire({
         icon: 'success',
         title: '¡Producto añadido!',
-        text: `Se ha guardado ${newProduct.title} correctamente`,
+        text: `Se ha guardado: ${this.productForm.value.title}`,
         showConfirmButton: false, 
         timer: 1500 
       });
 
-    } else {
-      // ALERTA DE ERROR
-      Swal.fire({
-        icon: 'error',
-        title: 'Ups...',
-        text: 'Por favor, rellena todos los campos correctamente.',
-        confirmButtonColor: '#d33' 
-      });    
+      this.productForm.reset(); // Limpiar el formulario después de agregar el producto
     }
   }
 }
